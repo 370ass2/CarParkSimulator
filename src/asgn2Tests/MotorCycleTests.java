@@ -370,12 +370,27 @@ public class MotorCycleTests {
 
 	/**
 	 * Test method for {@link asgn2Vehicles.Vehicle#isSatisfied()}.
+	 * isSatisfiedTurnedAwayTest: the motorCycle cannot park and turned away, check if dissatisfied
+	 * 
+	 * isSatisfiedParkedTest: the motorCycle is parked, check if satisfied
+	 * 
+	 * isSatisfiedQueuedTest: the motorCycle is queuing, check if satisfied
 	 */
 	@Test
-	public void isSatisfiedTest() throws VehicleException {		
+	public void isSatisfiedTurnedAwayTest() throws VehicleException {	
+		motorCycle.enterQueuedState();
+		motorCycle.exitQueuedState(20);
 		assertFalse("Fail to determine when the customer was dissatisfied", motorCycle.wasParked());
+	}
+	
+	public void isSatisfiedParkedTest() throws VehicleException {		
 		motorCycle.enterParkedState(30, Constants.MINIMUM_STAY ) ;
-		assertTrue("Fail to determine when the customer was satisfied", motorCycle.wasParked());
+		assertTrue("Fail to determine when the customer was satisfied", motorCycle.isSatisfied());
+	}
+	
+	public void isSatisfiedQueuedTest() throws VehicleException {		
+		motorCycle.enterQueuedState();
+		assertTrue("Fail to determine when the customer was satisfied", motorCycle.isSatisfied());
 	}
 	
 }
