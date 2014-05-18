@@ -5,7 +5,9 @@
  *
  * CarParkSimulator
  * asgn2Vehicles 
- * 20/04/2014
+ * 17/05/2014
+ * 
+ * @author Chun Hung Chung
  * 
  */
 package asgn2Vehicles;
@@ -22,7 +24,7 @@ import asgn2Exceptions.VehicleException;
  */
 public class Car extends Vehicle {
 	
-	private boolean small; 
+	private boolean small = true; 
 
 	/**
 	 * The Car Constructor - small set at creation, not mutable. 
@@ -33,6 +35,8 @@ public class Car extends Vehicle {
 	 * @throws VehicleException if arrivalTime is <= 0  
 	 */
 	public Car(String vehID, int arrivalTime, boolean small) throws VehicleException {
+		super(vehID, arrivalTime);
+		this.small = small;
 	}
 
 	/**
@@ -41,6 +45,7 @@ public class Car extends Vehicle {
 	 * @return true if small parking space, false otherwise
 	 */
 	public boolean isSmall() {
+		return small;
 	}
 
 	/* (non-Javadoc)
@@ -48,5 +53,6 @@ public class Car extends Vehicle {
 	 */
 	@Override
 	public String toString() {
+		return (super.toString() + "; Small car: " + Boolean.toString(small));
 	}
 }

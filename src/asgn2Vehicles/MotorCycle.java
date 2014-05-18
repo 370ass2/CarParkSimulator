@@ -5,7 +5,9 @@
  *
  * CarParkSimulator
  * asgn2Vehicles 
- * 20/04/2014
+ * 17/05/2014
+ * 
+ * @author Chun Hung Chung
  * 
  */
 package asgn2Vehicles;
@@ -29,5 +31,7 @@ public class MotorCycle extends Vehicle {
 	 * @throws VehicleException if arrivalTime is <= 0  
 	 */
 	public MotorCycle(String vehID, int arrivalTime) throws VehicleException {
+		super(vehID, arrivalTime);
+		if (arrivalTime <= 0){throw new VehicleException("Arrival time cannot be less than or equal to zero");}
 	}
 }
