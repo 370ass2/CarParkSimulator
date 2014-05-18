@@ -40,6 +40,9 @@ import asgn2Vehicles.Vehicle;
  */
 public class CarPark {
 
+	int maxCarSpaces, maxSmallCarSpaces, maxMotorCycleSpaces, maxQueueSize, count, numCars, numSmallCars, numMotorCycles, numDissatisfied;
+	String status;
+	ArrayList <Vehicle> queue, past, spaces;
 	
 	/**
 	 * CarPark constructor sets the basic size parameters. 
@@ -59,6 +62,17 @@ public class CarPark {
 	 * @param maxQueueSize maximum number of vehicles allowed to queue
 	 */
 	public CarPark(int maxCarSpaces,int maxSmallCarSpaces, int maxMotorCycleSpaces, int maxQueueSize) {
+		this.maxCarSpaces = maxCarSpaces;
+		this.maxSmallCarSpaces = maxSmallCarSpaces;
+		this.maxMotorCycleSpaces = maxMotorCycleSpaces;
+		this.maxQueueSize = maxQueueSize;
+		count = 0;
+		numCars = 0;
+		numSmallCars = 0;
+		numMotorCycles = 0;
+		queue = new ArrayList<Vehicle>();
+		past = new ArrayList<Vehicle>();
+		spaces = new ArrayList<Vehicle>();
 	}
 
 	/**
@@ -94,6 +108,7 @@ public class CarPark {
 	 * @return true if car park empty, false otherwise
 	 */
 	public boolean carParkEmpty() {
+		return true;
 	}
 	
 	/**
@@ -101,6 +116,7 @@ public class CarPark {
 	 * @return true if car park full, false otherwise
 	 */
 	public boolean carParkFull() {
+		return true;
 	}
 	
 	/**
@@ -147,6 +163,7 @@ public class CarPark {
 	 * @return number of cars in car park, including small cars
 	 */
 	public int getNumCars() {
+		return 0;
 	}
 	
 	/**
@@ -155,6 +172,7 @@ public class CarPark {
 	 * 			a small car space
 	 */
 	public int getNumMotorCycles() {
+		return 0;
 	}
 	
 	/**
@@ -163,6 +181,7 @@ public class CarPark {
 	 * 		   not occupying a small car space. 
 	 */
 	public int getNumSmallCars() {
+		return 0;
 	}
 	
 	/**
@@ -220,6 +239,7 @@ public class CarPark {
 	 * @return number of vehicles in the queue
 	 */
 	public int numVehiclesInQueue() {
+		return 0;
 	}
 	
 	/**
@@ -229,7 +249,7 @@ public class CarPark {
 	 * @param v Vehicle to be added 
 	 * @param time int holding current simulation time
 	 * @param intendedDuration int holding intended duration of stay 
-	 * @throws SimulationException if no suitable spaces are available for parking 
+	 * @throws SimuvlationException if no suitable spaces are available for parking 
 	 * @throws VehicleException if vehicle not in the correct state or timing constraints are violated
 	 */
 	public void parkVehicle(Vehicle v, int time, int intendedDuration) throws SimulationException, VehicleException {
@@ -251,6 +271,7 @@ public class CarPark {
 	 * @return true if queue empty, false otherwise
 	 */
 	public boolean queueEmpty() {
+		return true;
 	}
 
 	/**
@@ -258,6 +279,7 @@ public class CarPark {
 	 * @return true if queue full, false otherwise
 	 */
 	public boolean queueFull() {
+		return true;
 	}
 	
 	/**
@@ -267,6 +289,7 @@ public class CarPark {
 	 * @return true if space available for v, false otherwise 
 	 */
 	public boolean spacesAvailable(Vehicle v) {
+		return true;
 	}
 
 
@@ -275,6 +298,7 @@ public class CarPark {
 	 */
 	@Override
 	public String toString() {
+		return null;
 	}
 
 	/**
