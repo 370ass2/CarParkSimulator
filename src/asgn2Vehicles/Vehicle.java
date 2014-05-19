@@ -102,7 +102,8 @@ public abstract class Vehicle {
 	 */
 	public void exitParkedState(int departureTime) throws VehicleException {
 		if (parkState != "P"){throw new VehicleException("the car is not in parked state.");}
-		if (departureTime < parkingTime) {throw new VehicleException("car leaving before earilier than parking time assigned");}
+		if (departureTime < parkingTime) {throw new VehicleException("car leaving earilier than parking time assigned");}
+
 		parkState = "A";
 		this.departureTime = departureTime;
 	}
@@ -118,9 +119,8 @@ public abstract class Vehicle {
 	public void exitQueuedState(int exitTime) throws VehicleException {
 		if (parkState != "Q"){throw new VehicleException("the car is not in queued state.");}
 		if (exitTime <= arrivalTime) {throw new VehicleException("car leaving earlier than or equals to arrival time");}
-				
 		departureTime = exitTime;
-		parkState = "A";		
+		parkState = "A";
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public abstract class Vehicle {
 	 * @return the departureTime
 	 */
 	public int getDepartureTime() {
-		if (parkState == "P") {return (arrivalTime + intendedDuration);}
+		if (parkState == "P") {return (parkingTime + intendedDuration);}
 		return departureTime;
 	}
 	
