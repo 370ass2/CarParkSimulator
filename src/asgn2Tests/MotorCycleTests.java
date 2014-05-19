@@ -21,6 +21,10 @@ import asgn2Exceptions.*;
 import asgn2Simulators.Constants;
 import asgn2Vehicles.*;
 
+
+/**
+ * This class includes unit testing for class MotorCycle.
+ */
 public class MotorCycleTests {
 	
 	MotorCycle motorCycle;
@@ -32,7 +36,6 @@ public class MotorCycleTests {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		//MotorCycle(String vehID, int arrivalTime)
 		motorCycle = new MotorCycle("MC1",10);
 	}
 	

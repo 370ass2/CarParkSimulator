@@ -22,6 +22,10 @@ import org.junit.Test;
 import asgn2Exceptions.*;
 import asgn2Vehicles.*;
 
+
+/** 
+ * This class includes unit testing for the class Car.
+ */
 public class CarTests {
 
 	Car car;
