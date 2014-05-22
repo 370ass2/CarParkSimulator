@@ -48,10 +48,10 @@ public class CarParkTests {
 	@Before	
 	public void setUp() throws Exception {
 		//maxCarSpaces,maxSmallCarSpaces, maxMotorCycleSpaces, maxQueueSize
-		park = new CarPark(200,50, 40, 20);
+		park = new CarPark(200,50, 40, 20);		
 		mc = new MotorCycle("MC1",10);
 		c = new Car("C1",10,false);
-		smallC = new Car("C1",10,true);
+		smallC = new Car("C2",10,true);
 	}
 
 	/**
@@ -217,6 +217,8 @@ public class CarParkTests {
 	public void enterQueueJustFitMaxQueueSizeTest() throws SimulationException, VehicleException {		
 		//maxQueueSize = 20
 		for (int i=1; i<21; i++) {
+			String id = "C" + i;
+			Car c = new Car(id,10 +i, false);
 			park.enterQueue(c); //do 20 times
 		}
 		assertEquals("Fail to add correct numbers of vehicles into the queue",20,park.numVehiclesInQueue());
@@ -226,6 +228,8 @@ public class CarParkTests {
 	public void enterQueueWhenFulledTest() throws SimulationException, VehicleException {
 		//max size of queue is 20
 		for (int i = 1; i<22; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, 10 +i, false);
 			park.enterQueue(c);//do 21 times
 		}
 	}
@@ -243,7 +247,7 @@ public class CarParkTests {
 	@Test
 	public void exitQueuetest() throws SimulationException, VehicleException {
 		park.enterQueue(c);
-		park.enterQueue(c);
+		park.enterQueue(mc);
 		//exitTime = arrivalTime + time under maximum queue time.
 		park.exitQueue(c, 10+ Constants.MAXIMUM_QUEUE_TIME -1); 
 		assertEquals("Fail to remove vehicle from queue", 1 ,park.numVehiclesInQueue());
@@ -253,7 +257,7 @@ public class CarParkTests {
 	public void exitQueueExitCorrectVehicletest() throws SimulationException, VehicleException {
 		//add two different vehicle in the queue
 		park.enterQueue(c);
-		park.enterQueue(mc);
+		park.enterQueue(mc);  					//WRONGGGGGGGGGGGGGGGGGGGGGGGG
 		//remove the car but not motorcycle
 		park.exitQueue(c, 10+ Constants.MAXIMUM_QUEUE_TIME -1); 
 		assertEquals("", "MC1" ,mc.getVehID()); // TODO
@@ -290,8 +294,11 @@ public class CarParkTests {
 	 */
 	@Test
 	public void parkVehicleCountingNumCarsOnlyCarTest() throws SimulationException, VehicleException {		
-		park.parkVehicle(c, 10 +1, Constants.MINIMUM_STAY +1);
-		park.parkVehicle(c, 10 +2, Constants.MINIMUM_STAY +1);		
+		for (int i = 1; i < 3; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, 10 + i, false);
+			park.parkVehicle(c, 10 + i, Constants.MINIMUM_STAY +1);
+		}		
 		assertEquals("Not able to count cars in car park", 2, park.getNumCars());
 	}	
 	
@@ -305,8 +312,11 @@ public class CarParkTests {
 	 */
 	@Test
 	public void parkVehicleCountingNumCarsIncludeSmallCarTest() throws SimulationException, VehicleException {		
-		park.parkVehicle(c, 10 +1, Constants.MINIMUM_STAY +1);
-		park.parkVehicle(c, 10 +2, Constants.MINIMUM_STAY +1);
+		for (int i = 1; i < 3; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, 10 + i, false);
+			park.parkVehicle(c, 10 + i, Constants.MINIMUM_STAY +1);
+		}	
 		park.parkVehicle(smallC, 10 +3, Constants.MINIMUM_STAY +1);				
 		assertEquals("Number of cars did not include small cars", 3, park.getNumCars());
 	}
@@ -349,12 +359,12 @@ public class CarParkTests {
 	 */
 	@Test
 	public void parkVehicleCountingNumMotorCyclesHavingMotorParkedInSmallCarSpace() throws SimulationException, VehicleException {
-		//add motorcycles to fill up the spaces provided for motorcycle.
-		for (int i = 0; i < 40; i++) {
+		//add motorcycles more than the spaces provided for motorcycle.
+		for (int i = 1; i < 42; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, 10 + i);
 			park.parkVehicle(mc, 10 + i, Constants.MINIMUM_STAY +1);
-		}
-		//add one more motorcycle
-		park.parkVehicle(mc, 10 + 41, Constants.MINIMUM_STAY +1);
+		}		
 		assertEquals("Motorcycles parked in small car space is not counted", 41, park.getNumMotorCycles());		
 	}
 
@@ -379,8 +389,11 @@ public class CarParkTests {
 	@Test
 	public void parkVehicleCountingNumSmallCarsIncludeCarsTest() throws SimulationException, VehicleException {
 		park.parkVehicle(c, 10 +1, Constants.MINIMUM_STAY +1);
-		park.parkVehicle(smallC, 10 +2, Constants.MINIMUM_STAY +1);
-		park.parkVehicle(smallC, 10 +3, Constants.MINIMUM_STAY +1);	
+		for (int i = 1; i < 3; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, 10 + i, true);
+			park.parkVehicle(c, 10 + i, Constants.MINIMUM_STAY +1);
+		}	
 		assertEquals("Number of small cars have included cars", 2, park.getNumSmallCars());
 	}
 	
@@ -393,8 +406,11 @@ public class CarParkTests {
 	@Test
 	public void parkVehicleCountingNumSmallCarsIncludeMotorCycleTest() throws SimulationException, VehicleException {
 		park.parkVehicle(mc, 10 +1, Constants.MINIMUM_STAY +1);
-		park.parkVehicle(smallC, 10 +2, Constants.MINIMUM_STAY +1);
-		park.parkVehicle(smallC, 10 +3, Constants.MINIMUM_STAY +1);	
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car smallC = new Car(id, 10 +i, true);
+			park.parkVehicle(smallC, 10 +i, Constants.MINIMUM_STAY +1);
+		}		
 		assertEquals("Number of small cars have included motorcycle", 2, park.getNumSmallCars());
 	}
 	
@@ -404,7 +420,7 @@ public class CarParkTests {
 	@Test
 	public void testParkVehicle() {
 		fail("Not yet implemented"); // TODO
-		//something about no space available exception
+		//test something about no space available exception
 	}
 	
 	
@@ -468,8 +484,11 @@ public class CarParkTests {
 	public void testQueueFull() throws SimulationException, VehicleException {		
 		park.enterQueue(c);
 		assertFalse("Fail to show queue is not full",park.queueFull());
+		
 		//add 19 more to fill up the queue
-		for (int i = 1; i < 20; i++){
+		for (int i = 2; i < 21; i++){
+			String id = "C" + i;
+			Car c = new Car(id, 10 + i, false);
 			park.enterQueue(c);
 		}
 		assertTrue("Fail to show the queue is full",park.queueFull());
