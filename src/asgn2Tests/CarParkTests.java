@@ -5,6 +5,13 @@
  *
  * CarParkSimulator
  * asgn2Tests 
+ * 19/05/2014/**
+ * 
+ * This file is part of the CarParkSimulator Project, written as 
+ * part of the assessment for INB370, semester 1, 2014. 
+ *
+ * CarParkSimulator
+ * asgn2Tests 
  * 19/05/2014
  * 
  * @author Chun Hung Chung
@@ -20,6 +27,8 @@ import org.junit.Test;
 
 import asgn2CarParks.CarPark;
 import asgn2Exceptions.*;
+import asgn2Simulators.Constants;
+import asgn2Vehicles.*;
 
 /**
  * This class includes unit testing for class CarPark.
@@ -27,7 +36,9 @@ import asgn2Exceptions.*;
 public class CarParkTests {
 
 	CarPark park;
-	
+	MotorCycle mc;
+	Car c;
+	Car smallC;
 	
 	/**
 	 * Construct car park with values before each test.
@@ -38,6 +49,9 @@ public class CarParkTests {
 	public void setUp() throws Exception {
 		//maxCarSpaces,maxSmallCarSpaces, maxMotorCycleSpaces, maxQueueSize
 		park = new CarPark(200,50, 40, 20);
+		mc = new MotorCycle("MC1",10);
+		c = new Car("C1",10,false);
+		smallC = new Car("C1",10,true);
 	}
 
 	/**
@@ -71,18 +85,7 @@ public class CarParkTests {
 		fail("Not yet implemented"); // TODO
 	}
 	
-	@Test(expected = VehicleException.class)
-	public void archiveDepartingVehiclesArchivedStateTest() {
-		
-	}	
-	@Test(expected = VehicleException.class)
-	public void archiveDepartingVehiclesQueuedStateTest() {
-		
-	}	
-	@Test(expected = VehicleException.class)
-	public void archiveDepartingVehiclesNewStateTest() {
-		
-	}
+	
 	//?????????????????????????????
 	@Test(expected = SimulationException.class)
 	public void archiveDepartVehiclesNotInCarParkTest() {
@@ -146,24 +149,7 @@ public class CarParkTests {
 	}
 
 	
-	@Test(expected = VehicleException.class)
-	public void archiveQueueFailuresInNewTest() {
-		
-	}
-	@Test(expected = VehicleException.class)
-	public void archiveQueueFailuresInParkedTest() {
-		
-	}
-	@Test(expected = VehicleException.class)
-	public void archiveQueueFailuresInArchivedTest() {
-		
-	}
-
-	//?timing constaints are violated?
-	@Test(expected = VehicleException.class)
-	public void archiveQueueFailures  Test() {
-		
-	}
+	
 	
 	
 	
@@ -208,6 +194,8 @@ public class CarParkTests {
 	/**
 	 * Test method for {@link asgn2CarParks.CarPark#enterQueue(asgn2Vehicles.Vehicle)}.
 	 * 
+	 * enterQueueOneVehicleTest: Try adding one car in the queue, check if there is only one car in queue.
+	 * 
 	 * enterQueueFulledTest: Create a full queue and try to enterQueue,
 	 * expected to throw SimulationException
 	 * 
@@ -218,47 +206,30 @@ public class CarParkTests {
 		//add a vehicle into queue
 		//check if the vehicle is in the queue
 	}
-	
+			
 	@Test
-	public void enterQueueZeroTest() {
-		assertEquals("Fail to return zero when no vehicle in queue",0,park.numVehiclesInQueue());
-	}
-	
-	@Test
-	public void enterQueueOneVehicleTest() {		
-		park.enterQueue(v);
-		assertEquals("Fail to return zero when no vehicle in queue",1,park.numVehiclesInQueue());
+	public void enterQueueOneVehicleTest() throws SimulationException, VehicleException {		
+		park.enterQueue(c);
+		assertEquals("Fail to add vehicle into queue",1,park.numVehiclesInQueue());
 	}	
 	
 	@Test
-	public void enterQueueJustFitMaxQueueSizeTest() {		
+	public void enterQueueJustFitMaxQueueSizeTest() throws SimulationException, VehicleException {		
 		//maxQueueSize = 20
 		for (int i=1; i<21; i++) {
-			park.enterQueue(v); //do 20 times
+			park.enterQueue(c); //do 20 times
 		}
 		assertEquals("Fail to add correct numbers of vehicles into the queue",20,park.numVehiclesInQueue());
 	}	
 	
 	@Test(expected = SimulationException.class)
-	public void enterQueueWhenFulledTest() {
+	public void enterQueueWhenFulledTest() throws SimulationException, VehicleException {
 		//max size of queue is 20
 		for (int i = 1; i<22; i++) {
-			park.enterQueue(v);//do 21 times
+			park.enterQueue(c);//do 21 times
 		}
 	}
-	/* Already tested in MotorCycleTests
-	@Test(expected = VehicleException.class)
-	public void enterQueueAlreadyInQueuedStateTest() {
-		
-	}
-	@Test(expected = VehicleException.class)
-	public void enterQueueAlreadyInParkedStateTest() {
-		
-	}
-	@Test(expected = VehicleException.class)
-	public void enterQueueAlreadyInArchivedStateTest() {
-		
-	}*/
+
 		
 		
 	/**
@@ -268,14 +239,40 @@ public class CarParkTests {
 	public void testExitQueue() {
 		fail("Not yet implemented"); // TODO
 	}
+	
+	@Test
+	public void exitQueuetest() throws SimulationException, VehicleException {
+		park.enterQueue(c);
+		park.enterQueue(c);
+		//exitTime = arrivalTime + time under maximum queue time.
+		park.exitQueue(c, 10+ Constants.MAXIMUM_QUEUE_TIME -1); 
+		assertEquals("Fail to remove vehicle from queue", 1 ,park.numVehiclesInQueue());
+	}
+	
+	@Test
+	public void exitQueueExitCorrectVehicletest() throws SimulationException, VehicleException {
+		//add two different vehicle in the queue
+		park.enterQueue(c);
+		park.enterQueue(mc);
+		//remove the car but not motorcycle
+		park.exitQueue(c, 10+ Constants.MAXIMUM_QUEUE_TIME -1); 
+		assertEquals("", "MC1" ,mc.getVehID()); // TODO
+	}
+	
 
 	@Test(expected = SimulationException.class)
-	public void exitQueueInParkedTest() {
-		//put vehicle in parking status
-		//try to exit the queue
+	public void exitQueueInParkedTest() throws SimulationException, VehicleException {
+		//try park a vehicle into car park
+		try {park.parkVehicle(c, 10+ Constants.MAXIMUM_QUEUE_TIME -2, Constants.MINIMUM_STAY +1);} 
+		//catch unexpected SimulationException thrown by parkVehicle
+		catch (SimulationException e) {fail("No parking space available");}
+		//try to exitQueue with the parked car
+		park.exitQueue(c, 10+ Constants.MAXIMUM_QUEUE_TIME -1);
 	}
+	
 	@Test(expected = SimulationException.class)
 	public void exitQueueInArchivedTest() {
+		//
 		//put vehicle in archived status
 		//try to exit the queue
 	}
@@ -286,28 +283,133 @@ public class CarParkTests {
 	}
 	
 	/**
-	 * Test method for {@link asgn2CarParks.CarPark#getNumCars()}.
+	 * When car park containing only cars,
+	 * test if parkVehicle method is able to count total number of cars in car park
+	 * @throws VehicleException 
+	 * @throws SimulationException 
 	 */
 	@Test
-	public void testGetNumCars() {
-		fail("Not yet implemented"); // TODO
+	public void parkVehicleCountingNumCarsOnlyCarTest() throws SimulationException, VehicleException {		
+		park.parkVehicle(c, 10 +1, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(c, 10 +2, Constants.MINIMUM_STAY +1);		
+		assertEquals("Not able to count cars in car park", 2, park.getNumCars());
+	}	
+	
+	
+	/**
+	 * Test method for {@link asgn2CarParks.CarPark#getNumCars()}.
+	 * When car park containing small cars and cars,
+	 * test if parkVehicle method is able to count also small cars for total number of cars in car park
+	 * @throws VehicleException 
+	 * @throws SimulationException 
+	 */
+	@Test
+	public void parkVehicleCountingNumCarsIncludeSmallCarTest() throws SimulationException, VehicleException {		
+		park.parkVehicle(c, 10 +1, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(c, 10 +2, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(smallC, 10 +3, Constants.MINIMUM_STAY +1);				
+		assertEquals("Number of cars did not include small cars", 3, park.getNumCars());
 	}
+	
+	/**
+	 * When car park containing car and motorcycle,
+	 * test if parkVehicle method count only number of cars but not including motorcycle for numbers of cars.
+	 * @throws SimulationException
+	 * @throws VehicleException
+	 */
+	
+	@Test
+	public void parkVehicleCountingNumCarsIncludeMotorCycleTest() throws SimulationException, VehicleException {
+		//parking one car and motorcycle
+		park.parkVehicle(c, 10 +1, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(mc, 10 +1, Constants.MINIMUM_STAY +1);
+		assertEquals("Number of cars have included motorcycle", 1, park.getNumCars());
+	}
+	
 
 	/**
 	 * Test method for {@link asgn2CarParks.CarPark#getNumMotorCycles()}.
+	 * When car park containing only motorcycle,
+	 * test if parkVehicle method is able to count total number of motorcycle in car park
+	 * @throws VehicleException 
+	 * @throws SimulationException 
 	 */
 	@Test
-	public void testGetNumMotorCycles() {
-		fail("Not yet implemented"); // TODO
+	public void parkVehicleCountingNumMotorCyclesTest() throws SimulationException, VehicleException {
+		park.parkVehicle(mc, 10, Constants.MINIMUM_STAY +1);
+		assertEquals("Not able to count number of motorcycles in car park correctly", 1, park.getNumMotorCycles());			
+	}
+	
+	/**
+	 * When car park containing motorcycles that exceeding the max capacity assigned for motorcycles,
+	 * and there is motorcycle parked in small car space,
+	 * test if parkVehicle method is able to count total number of motorcycle in car park
+	 * @throws SimulationException
+	 * @throws VehicleException
+	 */
+	@Test
+	public void parkVehicleCountingNumMotorCyclesHavingMotorParkedInSmallCarSpace() throws SimulationException, VehicleException {
+		//add motorcycles to fill up the spaces provided for motorcycle.
+		for (int i = 0; i < 40; i++) {
+			park.parkVehicle(mc, 10 + i, Constants.MINIMUM_STAY +1);
+		}
+		//add one more motorcycle
+		park.parkVehicle(mc, 10 + 41, Constants.MINIMUM_STAY +1);
+		assertEquals("Motorcycles parked in small car space is not counted", 41, park.getNumMotorCycles());		
 	}
 
 	/**
-	 * Test method for {@link asgn2CarParks.CarPark#getNumSmallCars()}.
+	 * When car park containing only small car,
+	 * test if parkVehicle method is able to count total number of small cars in car park
+	 * @throws VehicleException 
+	 * @throws SimulationException 
 	 */
 	@Test
-	public void testGetNumSmallCars() {
-		fail("Not yet implemented"); // TODO
+	public void parkVehicleCountingNumSmallCarsTest() throws SimulationException, VehicleException {		
+		park.parkVehicle(smallC, 10 +1, Constants.MINIMUM_STAY +1);	
+		assertEquals("Number of small cars have included cars", 1, park.getNumSmallCars());
+	}	
+	
+	/**
+	 * When car park containing car and small car,
+	 * test if parkVehicle method is able to count total number of small cars in car park
+	 * @throws VehicleException 
+	 * @throws SimulationException 
+	 */
+	@Test
+	public void parkVehicleCountingNumSmallCarsIncludeCarsTest() throws SimulationException, VehicleException {
+		park.parkVehicle(c, 10 +1, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(smallC, 10 +2, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(smallC, 10 +3, Constants.MINIMUM_STAY +1);	
+		assertEquals("Number of small cars have included cars", 2, park.getNumSmallCars());
 	}
+	
+	/**
+	 * When car park containing motorcycle and small car,
+	 * test if parkVehicle method is able to count total number of small cars in car park
+	 * @throws VehicleException 
+	 * @throws SimulationException 
+	 */
+	@Test
+	public void parkVehicleCountingNumSmallCarsIncludeMotorCycleTest() throws SimulationException, VehicleException {
+		park.parkVehicle(mc, 10 +1, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(smallC, 10 +2, Constants.MINIMUM_STAY +1);
+		park.parkVehicle(smallC, 10 +3, Constants.MINIMUM_STAY +1);	
+		assertEquals("Number of small cars have included motorcycle", 2, park.getNumSmallCars());
+	}
+	
+	/**
+	 * Test method for {@link asgn2CarParks.CarPark#parkVehicle(asgn2Vehicles.Vehicle, int, int)}.
+	 */
+	@Test
+	public void testParkVehicle() {
+		fail("Not yet implemented"); // TODO
+		//something about no space available exception
+	}
+	
+	
+	
+	
 
 	/**
 	 * Test method for {@link asgn2CarParks.CarPark#getStatus(int)}.
@@ -334,13 +436,7 @@ public class CarParkTests {
 	}
 	
 	
-	/**
-	 * Test method for {@link asgn2CarParks.CarPark#parkVehicle(asgn2Vehicles.Vehicle, int, int)}.
-	 */
-	@Test
-	public void testParkVehicle() {
-		fail("Not yet implemented"); // TODO
-	}
+	
 
 	/**
 	 * Test method for {@link asgn2CarParks.CarPark#processQueue(int, asgn2Simulators.Simulator)}.
@@ -352,18 +448,31 @@ public class CarParkTests {
 
 	/**
 	 * Test method for {@link asgn2CarParks.CarPark#queueEmpty()}.
+	 * Test if queueEmpty method is able to show if queue is empty or not
+	 * @throws VehicleException 
+	 * @throws SimulationException 
 	 */
 	@Test
-	public void testQueueEmpty() {
-		fail("Not yet implemented"); // TODO
+	public void testQueueEmpty() throws SimulationException, VehicleException {		
+		assertTrue("Fail to show queue is empty",park.queueEmpty());
+		park.enterQueue(c);
+		assertFalse("Fail to show queue is not empty",park.queueEmpty());
 	}
 
 	/**
 	 * Test method for {@link asgn2CarParks.CarPark#queueFull()}.
+	 * @throws VehicleException 
+	 * @throws SimulationException 
 	 */
 	@Test
-	public void testQueueFull() {
-		fail("Not yet implemented"); // TODO
+	public void testQueueFull() throws SimulationException, VehicleException {		
+		park.enterQueue(c);
+		assertFalse("Fail to show queue is not full",park.queueFull());
+		//add 19 more to fill up the queue
+		for (int i = 1; i < 20; i++){
+			park.enterQueue(c);
+		}
+		assertTrue("Fail to show the queue is full",park.queueFull());
 	}
 
 	/**
