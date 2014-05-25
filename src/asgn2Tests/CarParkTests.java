@@ -527,29 +527,391 @@ public class CarParkTests {
 	
 
 	/**
-	 * Test method for {@link asgn2CarParks.CarPark#processQueue(int, asgn2Simulators.Simulator)}.
+	 * Test processQueue method should able to throw VehicleException when
+	 * the current time is earlier than the time of arrival.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test(expected = VehicleException.class)
+	public void processQueueLeavingQueueTimeEarlierThanArrivalTest() throws VehicleException, SimulationException {
+		park.enterQueue(c);
+		park.processQueue(9, sim);
+	}
+	
+	/**
+	 * Test processQueue method should able to throw VehicleException when
+	 * the current time is equal the time of arrival.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test(expected = VehicleException.class)
+	public void processQueueLeavingQueueTimeEqualToArrivalTest() throws VehicleException, SimulationException {
+		park.enterQueue(c);
+		park.processQueue(10, sim);
+	}
+	
+	/**
+	 * Test processQueue method when the queue is empty
+	 * Nothing should be added to the car park
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
 	 */
 	@Test
-	public void testProcessQueue() {
-		fail("Not yet implemented"); // TODO
+	public void processQueueEmptyQueueTest() throws VehicleException, SimulationException {
+		park.processQueue(1, sim);
+		assertTrue("Added a non-exist vehicle into car park when queue is empty", park.carParkEmpty());
 	}
 	
-	//1. test processQueue when queue is empty....
-	
-	
-	
-	//2-4.
-	//space for 3 kind of car available........
-	//That kind of car included in the queue....
-	//test processQueue.....see if state Q->P
-	
+	/**
+	 * Test processQueue method when normal car in queue and normal car space available
+	 * Normal car in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
 	@Test
-	public void processQueueNormalCarSpaceAvailableTest() {
-		
+	public void processQueueNormalCarTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove normal car from queue", 0, park.numVehiclesInQueue());
+		assertEquals("Fail to add normal car to park", 2, park.getNumCars());
 	}
+	
+	/**
+	 * Test processQueue method when normal car in queue and only one normal car space available
+	 * normal car in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
 	@Test
-	public void processQueueNormalCarSpaceFulledTest() {
+	public void processQueueNormalCarBoundaryTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 2; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		for (int i = 1; i < 150; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}		
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove normal car from queue when one normal car space available only",
+				0, park.numVehiclesInQueue());
+		assertEquals("Fail to add normal car to park when one normal car space available only",
+				150, park.getNumCars());
+	}
+	
+	/**
+	 * Test processQueue method when normal car in queue and no normal car space available
+	 * normal car in queue should not be removed from queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueNormalCarSpaceFullTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		for (int i = 1; i < 151; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}		
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove normal car from queue when one normal car space available only",
+				2, park.numVehiclesInQueue());
+		assertEquals("Fail to add normal car to park when one normal car space available only",
+				150, park.getNumCars());
+	}
+	
+	/**
+	 * Test processQueue method when small car in queue and small car space available
+	 * Small car in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueSmallCarTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove small car from queue", 0, park.numVehiclesInQueue());
+		assertEquals("Fail to add small car to park", 2, park.getNumSmallCars());
+	}
+	
+	/**
+	 * Test processQueue method when small car in queue,
+	 * small car space full but normal car space available
+	 * Small car in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueSmallCarIntoNormalSpaceTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		for (int i = 1; i < 51; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}		
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove small car from queue", 0, park.numVehiclesInQueue());
+		assertEquals("Fail to add small car to normal car space", 52, park.getNumSmallCars());
+	}
+	
+	/**
+	 * Test processQueue method when small car in queue,
+	 * small car space full but only one normal car space available
+	 * Only one small car in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueSmallCarIntoNormalSpaceBoundaryTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		for (int i = 1; i < 200; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}		
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove small car from queue", 1, park.numVehiclesInQueue());
+		assertEquals("Fail to add small car to normal car space", 200, park.getNumSmallCars());
+	}
+	
+	/**
+	 * Test processQueue method when small car in queue,
+	 * all small car space fill with motorcycles but normal car space available
+	 * Only one small car in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueSmallCarIntoNormalSpaceWhenSmallSpaceFilledWithMotorsTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		for (int i = 1; i < 91; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}				
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove small car from queue", 0, park.numVehiclesInQueue());
+		assertEquals("Fail to add small car to normal car space", 2, park.getNumSmallCars());
+	}
+	
+	/**
+	 * Test processQueue method when small car in queue,
+	 * all small car space fill with motorcycles but only one normal car space available
+	 * Only one small car in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueSmallCarIntoNormalSpaceWhenSmallSpaceFilledWithMotorsBoundaryTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		for (int i = 1; i < 91; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}		
+		for (int i = 1; i < 150; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}	
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove small car from queue", 1, park.numVehiclesInQueue());
+		assertEquals("Fail to add small car to normal car space", 1, park.getNumSmallCars());
+	}
+	
+	/**
+	 * Test processQueue method when small car in queue,
+	 * small car space and normal car space full 
+	 * No small car in queue should be removed from queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueSmallCarSpaceFullTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		for (int i = 1; i < 91; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}		
+		for (int i = 1; i < 151; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}	
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove small car from queue", 2, park.numVehiclesInQueue());
+		assertEquals("Fail to add small car to normal car space", 0, park.getNumSmallCars());
+	}
+	
+
+	/**
+	 * Test processQueue method when motorcycle in queue and motor space available
+	 * motorcycle in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueMotorcycleTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.enterQueue(mc);
+		}
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove motor from queue", 0, park.numVehiclesInQueue());
+		assertEquals("Fail to add motor to park", 2, park.getNumMotorCycles());
+	}
+	
+	/**
+	 * Test processQueue method when motorcycle in queue and 
+	 * motor space full but small car space available
+	 * motorcycle in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueMotorcycleIntoSmallSpaceTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.enterQueue(mc);
+		}
+		for (int i = 1; i < 41; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);;
+		}
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove motor from queue", 0, park.numVehiclesInQueue());
+		assertEquals("Fail to add motor to small car space", 42, park.getNumMotorCycles());
+	}
+	
+	/**
+	 * Test processQueue method when motorcycle in queue and 
+	 * motor space full but only one small car space available
+	 * only one motorcycle in queue should be removed from queue and parked.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueMotorcycleIntoSmallSpaceBoundaryTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.enterQueue(mc);
+		}
+		for (int i = 1; i < 90; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);;
+		}
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove motor from queue", 1, park.numVehiclesInQueue());
+		assertEquals("Fail to add motor to small car space", 90, park.getNumMotorCycles());
+	}
+	
+	/**
+	 * Test processQueue method when motorcycle in queue and 
+	 * motor and small car space full
+	 * no motorcycle in queue should be removed from queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 * 
+	 */
+	@Test
+	public void processQueueMotorcycleSpaceFullTest() throws VehicleException, SimulationException {
+		for (int i = 1; i < 3; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.enterQueue(mc);
+		}
+		for (int i = 1; i < 91; i++){
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);;
+		}
+		park.processQueue(3, sim);
+		assertEquals("Fail to remove motor from queue", 2, park.numVehiclesInQueue());
+		assertEquals("Fail to add motor to small car space", 90, park.getNumMotorCycles());
+	}
+	
+	/**
+	 * Test if the method is able to stop parking vehicle at the back of queue when 
+	 * a vehicle at the front has no space available(blocked the queue).
+	 * @throws VehicleException 
+	 * @throws SimulationException 
+	 */
+	@Test
+	public void processQueueBlockAfterFirstCantParkVehicleProcessTest() throws VehicleException, SimulationException {
+		//leave 1 normal car space in car park
+		for (int i = 1; i < 150; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		//add 2 normal car in queue
+		for (int i = 150; i < 152; i++){
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		//add a motor in queue
+		mc = new MotorCycle("MC1",152);
+		park.enterQueue(mc);
+		park.processQueue(200, sim);
 		
+		assertEquals("The processQueue action does not stop after it reach the first vehicle that can't be parked",
+				2, park.numVehiclesInQueue());
 	}
 	
 
@@ -568,6 +930,7 @@ public class CarParkTests {
 
 	/**
 	 * Test method for {@link asgn2CarParks.CarPark#queueFull()}.
+	 * Test if queueFull method is able to show if queue is full or not
 	 * @throws VehicleException 
 	 * @throws SimulationException 
 	 */
@@ -643,25 +1006,551 @@ public class CarParkTests {
 	}
 
 	
-	
-	
-
+		
 	/**
-	 * Test method for {@link asgn2CarParks.CarPark#tryProcessNewVehicles(int, asgn2Simulators.Simulator)}.
+	 * When normal car space is available, try process a normal car
+	 * Should be able to add the car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
 	 */
 	@Test
-	public void testTryProcessNewVehicles() {
-		fail("Not yet implemented"); // TODO
+	public void tryProcessNewVehiclesNormalCarArrivalTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+									1.0, 0.0, 0.0);
+		park.tryProcessNewVehicles(10, sim);
+		assertEquals("No normal car was added to the car park", 1, park.getNumCars());
+	}
+	
+	/**
+	 * When normal car space nearly full, try process a normal car
+	 * Should be able to add the car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesNormalCarArrivalNearlyFullTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+									1.0, 0.0, 0.0);
+		
+		for (int i = 1; i < 150; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		
+		park.tryProcessNewVehicles(10, sim);
+		assertEquals("Unable to add normal car till maximum set capacity of car park", 150, park.getNumCars());
+	}
+	
+	
+	/**
+	 * When normal car space is full but queue empty, try process a normal car
+	 * should be able to add the car into queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesNormalCarArrivalWhenNormalCarSpaceFulledTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 0.0, 0.0);
+		for (int i = 1; i < 151; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		park.tryProcessNewVehicles(10, sim);		
+		assertEquals("Fail to add the car into queue when no space available", 1, park.numVehiclesInQueue());
+	}
+	
+	/**
+	 * When normal car space is full but queue nearly full, try process a normal car
+	 * should be able to add the car into queue. 
+	 */	
+	@Test
+	public void tryProcessNewVehiclesNormalCarArrivalWhenNormalCarSpaceFulledAndQueueNearlyFullTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 0.0, 0.0);
+		for (int i = 1; i < 151; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 151; i < 170; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(170, sim);
+		assertEquals("Fail to add the car into queue when no space available", 20, park.numVehiclesInQueue());
+	}
+	
+	
+	/**
+	 * When normal car space and queue are full, try process a normal car
+	 * should not be able to add to queue or parked(archived the car).
+	 * Exception should be thrown when the vehicle tried to process has successfully going into park or queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesNormalCarArrivalWhenNormalCarSpaceAndQueueFulledTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 0.0, 0.0);
+		for (int i = 1; i < 151; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 151; i < 171; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(171, sim);
+	}
+	
+	/**
+	 * When normal car space available but queue are full, try process a normal car
+	 * should be able to add the car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesNormalCarArrivalWhenNormalCarSpaceAvailableButQueueFulledTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 0.0, 0.0);
+		for (int i = 1; i < 21; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(21, sim);
+		assertEquals("No normal car was added to the car park when queue fulled", 1, park.getNumCars());
+	}
+	
+//============================================================================================
+	
+		
+	/**
+	 * When small car space is available, try process a small car
+	 * should be able to add the small car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		park.tryProcessNewVehicles(1, sim);
+		assertEquals("No small car was added to the car park", 1, park.getNumSmallCars());
+	}
+	
+	/**
+	 * When small car space is full but normal car space available, try process a small car
+	 * should be able to add the small car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalSmallCarSpaceFullButNormalCarSpaceNotTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 51; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}
+		park.tryProcessNewVehicles(51, sim);
+		assertEquals("Small car unable to park after small car spaces fulled even normal car space available", 
+				51, park.getNumSmallCars());
+	}
+	
+	/**
+	 * When small car space is full but only one normal car space available, try process a small car
+	 * should be able to add the small car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalSmallCarSpaceFullButNormalCarSpaceNotBoundaryTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 200; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}
+		park.tryProcessNewVehicles(200, sim);
+		assertEquals("Small car unable to park after small car spaces fulled even normal car space available", 
+				200, park.getNumSmallCars());
+	}
+		
+	/**
+	 * When small and normal car space are full but queue is not, try process a small car
+	 * should be able to add the small car into queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalSmallAndNormalCarSpaceFullTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 201; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}
+		park.tryProcessNewVehicles(201, sim);
+		assertEquals("Small car unable to enter the queue when no space available", 
+				1, park.numVehiclesInQueue());
+	}
+	
+	/**
+	 * When small and normal car space are full but queue is nearly full, try process a small car
+	 * should be able to add the small car into queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalSmallAndNormalCarSpaceFullBoundaryTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 201; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 201; i < 220; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(220, sim);
+		assertEquals("Small car unable to enter the queue when no space available", 
+				20, park.numVehiclesInQueue());
+	}
+	
+	/**
+	 * When both queue, small and normal car space are full, try process a small car
+	 * should not be able to add to queue or parked(archived the car).
+	 * Exception should be thrown when the vehicle tried to process has successfully going into park or queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalQueueAndSmallAndNormalCarSpaceFullTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 201; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 201; i < 221; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(221, sim);
+	}
+	
+	/**
+	 * When queue is full but small car space available, try process a small car
+	 * should be able to add the small car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalQueueFullButSmallCarSpaceAvailableTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 21; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(21, sim);
+		assertEquals("Unable to add small cars into park when small car space available but queue full",
+				1, park.getNumSmallCars());
+	}
+	
+	/**
+	 * When queue is full but only one small car space available, try process a small car
+	 * should be able to add the small car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalQueueFullButSmallCarSpaceAvailableBoundaryTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 200; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, true);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 200; i < 220; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(220, sim);
+		assertEquals("Unable to add small cars into park when small car space available but queue full",
+				200, park.getNumSmallCars());
+	}
+	
+	
+	/**
+	 * When one of small car space are occupied by motorcycle but normal car space is full, try process a small car
+	 * should be able to add the small car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalSomeMotorParkingInSmallSpaceTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 151; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 1; i < 42; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		park.tryProcessNewVehicles(151, sim);
+		assertEquals("Unable to add small car into car park when no normal space"
+				+ " and a motor is parked in small car space", 1, park.getNumSmallCars());
+	}
+	
+	/**
+	 * When most of small car space are occupied by motorcycle but normal car space is full, try process a small car
+	 * should be able to add the small car into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalSomeMotorParkingInSmallSpaceBoundaryTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 151; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 1; i < 90; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		park.tryProcessNewVehicles(151, sim);
+		assertEquals("Unable to add small car into car park when no normal space"
+				+ " and a motor is parked in small car space", 1, park.getNumSmallCars());
+	}
+	
+	
+	/**
+	 * When all of small car space are occupied by motorcycle and normal car space is full, 
+	 * queue is not full, try process a small car
+	 * should be able to add the small car into queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalOnlyQueueAvailableTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 151; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 1; i < 91; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		park.tryProcessNewVehicles(151, sim);
+		assertEquals("Unable to add small car into queue when spaces are occupied by normal car and motor", 
+				1, park.numVehiclesInQueue());
+	}
+	
+	/**
+	 * When all of small car space are occupied by motorcycle and the queue and normal car space are full, 
+	 * try process a small car
+	 * should not be able to add to queue or parked(archived the car).
+	 * Exception should be thrown when the vehicle tried to process has successfully going into park or queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesSmallCarArrivalNoSpacesAvailableTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				1.0, 1.0, 0.0);
+		for (int i = 1; i < 151; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.parkVehicle(c, i, 300);
+		}
+		for (int i = 1; i < 91; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		for (int i = 151; i < 171; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(171, sim);		
 	}
 	
 	
 	
+//============================================================================================
 	
+	/**
+	 * When no motorcycle is parking, try process a motorcycle
+	 * should be able to add the motorcycle into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesMotorCycleArrivalTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				0.0, 0.0, 1.0);
+		park.tryProcessNewVehicles(1, sim);
+		assertEquals("No motorcycle was added to the car park", 1, park.getNumMotorCycles());
+	}
 	
+	/**
+	 * When motorcycle space is full but small car space available, try process a motorcycle
+	 * should be able to add the motorcycle into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesMotorCycleArrivalNoMotorSpaceButSmallSpaceAvailableTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				0.0, 0.0, 1.0);
+		for (int i = 1; i < 41; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		park.tryProcessNewVehicles(1, sim);
+		assertEquals("Unable to add motorcycle to the car park when motor space full but small car space available"
+				, 41, park.getNumMotorCycles());
+	}
 	
+	/**
+	 * When motorcycle space is full and only one small car space available, try process a motorcycle
+	 * should be able to add the motorcycle into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesMotorCycleArrivalNoMotorSpaceButSmallSpaceAvailableBoundaryTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				0.0, 0.0, 1.0);
+		for (int i = 1; i < 90; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		park.tryProcessNewVehicles(90, sim);
+		assertEquals("Unable to add motorcycle into car park when motor space full but small car space available"
+				, 90, park.getNumMotorCycles());
+	}
+		
+	/**
+	 * When queue is full but motorcycle space is available, try process a motorcycle
+	 * should be able to add the motorcycle into car park.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesMotorCycleArrivalNoQueueSpaceButMotorSpaceAvailableTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				0.0, 0.0, 1.0);
+		for (int i = 1; i < 21; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}
+		park.tryProcessNewVehicles(1, sim);
+		assertEquals("Unable to add motorcycle into car park when queue is full but space available", 
+				1, park.getNumMotorCycles());
+	}
 	
+	/**
+	 * When motorcycle space and small car space are full but queue available, try process a motorcycle
+	 * should be able to add the motorcycle into queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesMotorCycleArrivalNoMotorSpaceAndSmallSpaceButQueueAvailableTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				0.0, 0.0, 1.0);
+		for (int i = 1; i < 91; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		park.tryProcessNewVehicles(1, sim);
+		assertEquals("Unable to add motorcycle into queue when no space available", 1, park.numVehiclesInQueue());
+	}
 	
+	/**
+	 * When motorcycle space and small car space are full but only one queue space available, try process a motorcycle
+	 * should be able to add the motorcycle into queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesMotorCycleArrivalNoMotorSpaceAndSmallSpaceButQueueAvailableBoundaryTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				0.0, 0.0, 1.0);
+		for (int i = 1; i < 91; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		for (int i = 1; i < 20; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}		
+		park.tryProcessNewVehicles(1, sim);
+		assertEquals("Unable to add motorcycle into queue when no space available", 20, park.numVehiclesInQueue());
+	}
 	
+	/**
+	 * When both queue, motorcycle space and small car space are full, try process a motorcycle
+	 * should not be able to add to queue or parked(archived the motorcycle).
+	 * Exception should be thrown when the vehicle tried to process has successfully going into park or queue.
+	 * @throws SimulationException 
+	 * @throws VehicleException 
+	 */
+	@Test
+	public void tryProcessNewVehiclesMotorCycleArrivalNothingAvailableTest() throws SimulationException, VehicleException {
+		Simulator sim = new Simulator(Constants.DEFAULT_SEED,Constants.DEFAULT_INTENDED_STAY_MEAN,Constants.DEFAULT_INTENDED_STAY_SD,
+				0.0, 0.0, 1.0);
+		for (int i = 1; i < 91; i++) {
+			String id = "MC" + i;
+			MotorCycle mc = new MotorCycle(id, i);
+			park.parkVehicle(mc, i, 300);
+		}
+		for (int i = 1; i < 21; i++) {
+			String id = "C" + i;
+			Car c = new Car(id, i, false);
+			park.enterQueue(c);
+		}		
+		park.tryProcessNewVehicles(1, sim);
+	}
 	
 	
 
@@ -816,7 +1705,6 @@ public class CarParkTests {
 	public void testNumVehiclesInQueue() {
 		assertTrue(true);
 	}
-	
 	
 	
 }
