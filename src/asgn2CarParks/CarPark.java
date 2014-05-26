@@ -367,7 +367,13 @@ public class CarPark {
 	 */
 	@Override
 	public String toString() {
-		return null;
+		return "CarPark [count: " + count
+				+ "numCars: " + numCars
+				+ " numSmallCars: " + numSmallCars
+				+ " numMotorCycles: " + numMotorCycles
+				+ " queue: " + (queue.size())
+				+ " numDissatisfied: " + numDissatisfied
+				+ " past: " + past.size() + "]";
 	}
 
 	/**
