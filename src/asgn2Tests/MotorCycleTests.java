@@ -141,7 +141,6 @@ public class MotorCycleTests {
 	 */
 	@Test 
 	public void exitQueuedStateToArchiveExitTimeCorrectTest() throws VehicleException {		
-		//arrivalTime = 10
 		motorCycle.enterQueuedState();
 		motorCycle.exitQueuedState(60);
 		assertEquals("Fail to set correct archive departure time",60,motorCycle.getDepartureTime());
@@ -173,7 +172,7 @@ public class MotorCycleTests {
 	public void exitQueuedStateExitTimeEarlierThanArrivalTimeTest() throws VehicleException {
 		try {motorCycle.enterQueuedState();} 
 		catch (VehicleException e){ fail("MotorCycle cannot enter queue state.");} //use try-catch to ensure the vehicleException expected is not throw by enterQueuedState
-		motorCycle.exitQueuedState(9); //(9 = arrivalTime - 1)
+		motorCycle.exitQueuedState(9); 
 	}
 	
 	@Test(expected = VehicleException.class)
@@ -224,11 +223,9 @@ public class MotorCycleTests {
 		motorCycle.enterParkedState(40, Constants.MINIMUM_STAY +1);
 	}
 	
-	@Test
+	@Test(expected = VehicleException.class)
 	public void enterParkedStateParkingTimeZeroTest() throws VehicleException {
-		//enterParkedState(int parkingTime, int intendedDuration)
 		motorCycle.enterParkedState(0, Constants.MINIMUM_STAY +1);
-		assertEquals("Parking Time should able to be zero.",0,motorCycle.getParkingTime());
 	}
 	
 	@Test(expected = VehicleException.class)
@@ -291,10 +288,8 @@ public class MotorCycleTests {
 	
 	@Test(expected = VehicleException.class)
 	public void exitParkedStateDepartTimeEarlierThanParkingTimeTest() throws VehicleException {
-		//enterParkedState(int parkingTime, int intendedDuration)
 		try {motorCycle.enterParkedState(50, Constants.MINIMUM_STAY );}
 		catch (VehicleException e){ fail("MotorCycle cannot enter park state");}  //use try-catch to ensure the vehicleException expected is not throw by enterParkedState
-		//exitParkedState(int departureTime)
 		motorCycle.exitParkedState(49);
 	}	
 	
@@ -328,7 +323,6 @@ public class MotorCycleTests {
 	 */
 	@Test
 	public void getParkingTimeTest() throws VehicleException {
-		//enterParkedState(int parkingTime, int intendedDuration)
 		motorCycle.enterParkedState(30, Constants.MINIMUM_STAY );
 		assertEquals("Fail to get correct parking time",30,motorCycle.getParkingTime());	
 	}

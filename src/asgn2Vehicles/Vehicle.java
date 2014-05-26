@@ -75,7 +75,7 @@ public abstract class Vehicle {
 	 */
 	public void enterParkedState(int parkingTime, int intendedDuration) throws VehicleException {
 		if ((parkState == "P")|| (parkState == "Q")){throw new VehicleException("the car is either parked or queued.");}
-		if (parkingTime < 0 ) {throw new VehicleException("parking time below zero");}
+		if (parkingTime <= 0 ) {throw new VehicleException("parking time below zero");}
 		if (intendedDuration < Constants.MINIMUM_STAY ) {throw new VehicleException("parking time below minimum prescribed in asgnSimulators.Constants");}
 		this.parkingTime = parkingTime;
 		this.intendedDuration = intendedDuration;
