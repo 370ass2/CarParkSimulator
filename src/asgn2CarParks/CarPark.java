@@ -44,11 +44,12 @@ public class CarPark {
 	numMotorCycles, numDissatisfied;
 	String status;
 	ArrayList <Vehicle> queue, past, spaces, temp;
-	ArrayList <String> carSpaces, smallCarSpaces, motorCycleSpaces;
+	ArrayList <String> carSpaces, smallCarSpaces, motorCycleSpaces, log;
 	
 	/**
 	 * CarPark constructor sets the basic size parameters. 
 	 * Uses default parameters
+	 * @throws SimulationException 
 	 */
 	public CarPark() {
 		this(Constants.DEFAULT_MAX_CAR_SPACES,Constants.DEFAULT_MAX_SMALL_CAR_SPACES,
@@ -63,7 +64,7 @@ public class CarPark {
 	 * @param maxMotorCycleSpaces maximum number of spaces allocated to MotorCycles
 	 * @param maxQueueSize maximum number of vehicles allowed to queue
 	 */
-	public CarPark(int maxCarSpaces,int maxSmallCarSpaces, int maxMotorCycleSpaces, int maxQueueSize) {
+	public CarPark(int maxCarSpaces,int maxSmallCarSpaces, int maxMotorCycleSpaces, int maxQueueSize){
 		this.maxCarSpaces = maxCarSpaces;
 		this.maxSmallCarSpaces = maxSmallCarSpaces;
 		this.maxMotorCycleSpaces = maxMotorCycleSpaces;
@@ -78,6 +79,8 @@ public class CarPark {
 		carSpaces = new ArrayList<String>();
 		smallCarSpaces = new ArrayList<String>();
 		motorCycleSpaces = new ArrayList<String>();
+		log = new ArrayList<String>();
+		status="";
 	}
 
 	/**
@@ -231,28 +234,31 @@ public class CarPark {
 	 * @return String containing current state 
 	 */
 	public String getStatus(int time) {
-		String str = time +"::"
-		+ this.count + "::" 
-		+ "P:" + this.spaces.size() + "::"
-		+ "C:" + this.numCars + "::S:" + this.numSmallCars 
-		+ "::M:" + this.numMotorCycles 
-		+ "::D:" + this.numDissatisfied 
-		+ "::A:" + this.past.size()  
-		+ "::Q:" + this.queue.size(); 
-		for (Vehicle v : this.queue) {
-			if (v instanceof Car) {
-				if (((Car)v).isSmall()) {
-					str += "S";
+		if (log.size()==time){
+			String str = time +"::"
+			+ this.count + "::" 
+			+ "P:" + this.spaces.size() + "::"
+			+ "C:" + this.numCars + "::S:" + this.numSmallCars 
+			+ "::M:" + this.numMotorCycles 
+			+ "::D:" + this.numDissatisfied 
+			+ "::A:" + this.past.size()  
+			+ "::Q:" + this.queue.size(); 
+			for (Vehicle v : this.queue) {
+				if (v instanceof Car) {
+					if (((Car)v).isSmall()) {
+						str += "S";
+					} else {
+						str += "C";
+					}
 				} else {
-					str += "C";
+					str += "M";
 				}
-			} else {
-				str += "M";
 			}
+			str += this.status+"\n";
+			this.status="";
+			log.add(str);
 		}
-		str += this.status;
-		this.status="";
-		return str+"\n";
+		return log.get(time);
 	}
 	
 
