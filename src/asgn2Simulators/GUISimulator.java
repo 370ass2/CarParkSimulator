@@ -54,6 +54,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  * @author Chun Pui Chan
@@ -331,7 +332,7 @@ public class GUISimulator extends JFrame implements Runnable {
 				String[] currentStatus = carPark.getStatus((int) spinner.getValue()).split("::");
 				//format: (time)::(TotalVehicles)::(CurrentVehicles)::(CurrentCars)::(CurrentSmallCars)::(CurrentMotorcycles)::(TotalDissatisfied)::(TotalArchived)"::(Queue)(status if any)
 				lblTotalCars.setText("Total Cars Visited: " + currentStatus[1]);
-				lblRecentNoOf.setText("Recent no. of vehicles: " + currentStatus[2]);
+				lblRecentNoOf.setText("Recent no. of vehicles: " + currentStatus[2].substring(2));
 				lblRecentNoOf_1.setText("Recent no. of cars: " + currentStatus[3].substring(2));
 				lblRecentNoOf_2.setText("Recent no. of small cars: " + currentStatus[4].substring(2));
 				lblRecentNoOf_3.setText("Recent no. of MotorCycles: " + currentStatus[5].substring(2));
@@ -446,11 +447,12 @@ public class GUISimulator extends JFrame implements Runnable {
 		final JTextField txtStaysd = new JTextField();
 		
 		//lblSizeParameters
-		lblSizeParameters.setBounds(7, 7, 75, 15);
+		lblSizeParameters.setBounds(7, 7, 196, 15);
 		configureFrame.getContentPane().add(lblSizeParameters);
 
 		//lblMaxCarSpaces
-		lblMaxCarSpaces.setBounds(122, 29, 81, 15);
+		lblMaxCarSpaces.setBounds(17, 29, 186, 15);
+		lblMaxCarSpaces.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblMaxCarSpaces);
 
 		//txtCarspaces
@@ -460,7 +462,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtCarspaces.setColumns(10);
 
 		//lblMaxSmallCar
-		lblMaxSmallCar.setBounds(93, 54, 110, 15);
+		lblMaxSmallCar.setBounds(7, 54, 196, 15);
+		lblMaxSmallCar.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblMaxSmallCar);
 
 		//txtSmallcarspaces
@@ -470,7 +473,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtSmallcarspaces.setColumns(10);
 
 		//lblSmaxMotorcycleSpace
-		lblSmaxMotorcycleSpace.setBounds(86, 79, 117, 15);
+		lblSmaxMotorcycleSpace.setBounds(7, 79, 196, 15);
+		lblSmaxMotorcycleSpace.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblSmaxMotorcycleSpace);
 
 		//txtMotorcyclespaces
@@ -480,7 +484,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtMotorcyclespaces.setColumns(10);
 		
 		//lblMaxQueueSize
-		lblMaxQueueSize.setBounds(121, 104, 82, 15);
+		lblMaxQueueSize.setBounds(10, 104, 193, 15);
+		lblMaxQueueSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblMaxQueueSize);
 		
 		//txtQueuesize
@@ -489,12 +494,13 @@ public class GUISimulator extends JFrame implements Runnable {
 		configureFrame.getContentPane().add(txtQueuesize);
 		txtQueuesize.setColumns(10);
 		
-		//
-		lblRngAndProbs.setBounds(7, 126, 73, 15);
+		//lblRngAndProbs
+		lblRngAndProbs.setBounds(7, 126, 196, 15);
 		configureFrame.getContentPane().add(lblRngAndProbs);
 		
 		//lblSeed
-		lblSeed.setBounds(178, 148, 25, 15);
+		lblSeed.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblSeed.setBounds(7, 148, 196, 15);
 		configureFrame.getContentPane().add(lblSeed);
 		
 		//txtSeed
@@ -504,7 +510,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtSeed.setColumns(10);
 		
 		//lblCarProb
-		lblCarProb.setBounds(158, 173, 45, 15);
+		lblCarProb.setBounds(7, 173, 196, 15);
+		lblCarProb.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblCarProb);
 		
 		//txtCarprob
@@ -514,7 +521,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtCarprob.setColumns(10);
 		
 		//lblSmallCarProb
-		lblSmallCarProb.setBounds(129, 198, 74, 15);
+		lblSmallCarProb.setBounds(7, 198, 196, 15);
+		lblSmallCarProb.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblSmallCarProb);
 		
 		//txtSmallcarprob
@@ -524,7 +532,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtSmallcarprob.setColumns(10);
 		
 		//lblMotorcycleProb
-		lblMotorcycleProb.setBounds(122, 223, 81, 15);
+		lblMotorcycleProb.setBounds(7, 223, 196, 15);
+		lblMotorcycleProb.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblMotorcycleProb);
 		
 		//txtMotorcycleprob
@@ -534,7 +543,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtMotorcycleprob.setColumns(10);
 		
 		//lblIntendedStayMean
-		lblIntendedStayMean.setBounds(107, 248, 96, 15);
+		lblIntendedStayMean.setBounds(7, 248, 196, 15);
+		lblIntendedStayMean.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblIntendedStayMean);
 		
 		//txtStaymean
@@ -544,7 +554,8 @@ public class GUISimulator extends JFrame implements Runnable {
 		txtStaymean.setColumns(10);
 
 		//lblIntendedStaySd
-		lblIntendedStaySd.setBounds(119, 273, 84, 15);
+		lblIntendedStaySd.setBounds(7, 273, 196, 15);
+		lblIntendedStaySd.setHorizontalAlignment(SwingConstants.RIGHT);
 		configureFrame.getContentPane().add(lblIntendedStaySd);
 
 		//txtStaysd

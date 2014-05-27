@@ -1,0 +1,1 @@
+java -cp "lib\jcommon-1.0.21.jar;lib\jfreechart-1.0.17.jar;.;bin" asgn2Simulators.GUISimulator
